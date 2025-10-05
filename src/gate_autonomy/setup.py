@@ -13,10 +13,10 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='kc',
-    maintainer_email='kcleck06@gmail.com',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    maintainer='Unity Robotics',
+    maintainer_email='unity-robotics@unity3d.com',
+    description='AUV controller ROS node with object detection integration',
+    license='Apache 2.0',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [

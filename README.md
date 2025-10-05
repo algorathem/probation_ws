@@ -13,12 +13,12 @@
 
 1. **Depth Control:**  
    - The robot should reach a target depth quickly. A proportional gain (`k_depth`) controls descent speed, clamped to avoid excessive velocity.  
-   - The target depth was obtained by monitoring altitude data published in '/mavros/global_position/rel_alt', with the help of a foxglove simulation
+   - The target depth was obtained by monitoring altitude data published in '/mavros/global_position/rel_alt', with the help of a foxglove simulation.
 
 2. **Gate Detection:**  
    - A vision node provides bounding boxes (`BoundingBoxArray`).  
    - Only boxes labeled `"gate"` are considered.  
-   - The last time the gate was seen along with a gate timeout variable was used to prevent erratic behavior when the gate temporarily disappears from published detections (when other objects are published instead)
+   - The last time the gate was seen along with a gate timeout variable was used to prevent erratic behavior when the gate temporarily disappears from published detections (when other objects are published instead).
 
 3. **Navigation Logic:**  
    - **Searching:** If the gate is not detected, rotate in place.  
@@ -50,20 +50,21 @@ The endpoint will start on 0.0.0.0:10000 by default.
 ## 3. Launch Unity Simulation
 Open the Unity simulation project.
 
-If you haven’t installed the simulation yet, download it from the workshop Notion page
+If you haven’t installed the simulation yet, download it from the workshop Notion page: [https://mecatron.notion.site/ros2](https://mecatron.notion.site/ros2)
+
 
 ## 4. Enter Guided Mode to allow the node to control the vehicle autonomously
 ```ros2 service call /mavros/set_mode mavros_msgs/srv/SetMode "{base_mode: 0, custom_mode: 'GUIDED'}"```
 
 ## 5. Enter Object Detection Mode
-In the Unity simulation project, press Tab to activate the main camera for object detection.
+In the Unity simulation project, press ```Tab``` to activate the main camera for object detection.
 
 ## 6. Run the gate locator node
 ```ros2 run gate_autonomy gate_locator```
 
 ## Expected Behaviour
 
-1. The robot first descends to the target depth (gate-level)
+1. The robot first descends to the target depth (gate-level).
 2. Once at depth, it rotates in place to locate the gate.  
 3. After detecting the gate, it moves forward while adjusting its lateral position to stay centered on the gate.  
 4. If lateral correction is not needed, it proceeds straight through the gate without unnecessary rotation.
