@@ -50,7 +50,7 @@ The endpoint will start on 0.0.0.0:10000 by default.
 ## 3. Launch Unity Simulation
 Open the Unity simulation project.
 
-If you haven’t installed the simulation yet, download it from the workshop Notion page: [Notion Page](https://mecatron.notion.site/ros2)
+If you haven’t installed the simulation yet, download it from the workshop [Notion page](https://mecatron.notion.site/ros2).
 
 
 
