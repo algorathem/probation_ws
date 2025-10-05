@@ -17,20 +17,22 @@ class GateLocator(Node):
 
         # State
         self.current_alt = None
-        self.target_alt = -1.5  # target depth, set to-1.2 to stop above orange obstacle
+        self.target_alt = -1.5  # target depth
         self.gate_detected = False
-        self.gate_x = 0.5        # horizontal position (0-1)
+        self.gate_x = 0.5       # normalized x-center (0–1)
+        self.gate_y = 0.5       # normalized y-center (0–1)
         self.gate_last_seen_time = 0.0
         self.gate_timeout = 1.5  # seconds
 
         # Controller parameters
         self.k_p = 1.0            # proportional gain for angular correction
         self.k_lat = 0.5          # proportional gain for lateral motion
-        self.forward_speed = 1.0  # base forward speed m/s
-        self.center_threshold = 0.2  # threshold for considering centered
+        self.forward_speed = 1.0  # base forward speed (m/s)
+        self.center_threshold = 0.2
+        self.smoothing_factor = 0.3  # smooth bounding box updates
 
         # Timer
-        self.timer = self.create_timer(0.1, self.control_loop)
+        self.timer = self.create_timer(0.05, self.control_loop)
 
     def alt_callback(self, msg):
         self.current_alt = msg.data
@@ -39,9 +41,10 @@ class GateLocator(Node):
         for box in msg.bounding_boxes:
             if box.label_name == "gate":
                 self.gate_detected = True
-                self.gate_x = box.x
+                self.gate_x = box.x      # normalized center x
+                self.gate_size = box.w * box.h  # approximate area for distance cue
                 self.gate_last_seen_time = time.time()
-                self.get_logger().info(f"Gate detected at ({box.x:.2f}, {box.y:.2f})")
+                self.get_logger().info(f"Gate detected at x={box.x:.2f}, size={self.gate_size:.3f}")
                 return
 
     def control_loop(self):
@@ -54,41 +57,39 @@ class GateLocator(Node):
 
         msg = Twist()
 
-        # --- Depth control with proportional gain ---
+        # --- Depth control ---
         if self.current_alt > self.target_alt + 0.05:
             depth_error = self.target_alt - self.current_alt
-            k_depth = 1.5  # gain for faster descent
-            msg.linear.z = max(min(k_depth * depth_error, 2.0), -2.0)  # clamp
+            k_depth = 2.0
+            msg.linear.z = max(min(k_depth * depth_error, 2.0), -2.0)
             msg.angular.z = 0.0
             msg.linear.x = 0.0
             msg.linear.y = 0.0
             self.get_logger().info(f"Descending... Altitude: {self.current_alt:.2f}")
         else:
-            msg.linear.z = 0.0  # hold depth
+            msg.linear.z = 0.0
 
             # --- Gate search & centering ---
             if not self.gate_detected:
-                msg.angular.z = 0.7  # rotate to search
+                msg.angular.z = 0.7
                 msg.linear.x = 0.0
                 msg.linear.y = 0.0
                 self.get_logger().info("Searching for gate...")
             else:
-                # Gate detected: steer while moving forward
-                x_error = self.gate_x - 0.5
+                x_error = self.gate_x - 0.5  # deviation from center
 
-                # Angular correction
+                # Angular + lateral correction
                 msg.angular.z = -self.k_p * x_error
-
-                # Lateral motion proportional to horizontal error (clamped)
                 msg.linear.y = max(min(-self.k_lat * x_error, 0.5), -0.5)
 
-                # Forward speed reduces slightly if far from center
-                if abs(x_error) < self.center_threshold:
-                    msg.linear.x = self.forward_speed
-                else:
-                    msg.linear.x = self.forward_speed * max(0.3, 1 - abs(x_error)/0.5)
+                # Adjust forward speed by how centered and close the gate is
+                size_factor = min(self.gate_size / 0.2, 1.0) if hasattr(self, 'gate_size') else 0.0
+                forward_gain = 1 - abs(x_error)
+                msg.linear.x = self.forward_speed * forward_gain * (1 - 0.5 * size_factor)
 
-                self.get_logger().info(f"Approaching gate, x_error={x_error:.2f}, angular={msg.angular.z:.2f}, lateral={msg.linear.y:.2f}")
+                self.get_logger().info(
+                    f"Approaching gate | x_err={x_error:.2f}, speed={msg.linear.x:.2f}, size={getattr(self, 'gate_size', 0):.3f}"
+                )
 
         self.vel_pub.publish(msg)
 
