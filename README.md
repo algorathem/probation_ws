@@ -34,33 +34,31 @@
 
 ---
 
-# Setup Steps for ROS2 Gate Locator Simulation
+## Setup Steps for ROS2 Gate Locator Simulation
 
-## 1. Build ROS2 Workspace
+1. **Build ROS2 Workspace**
 
 ```bash
 cd probation_ws
 colcon build
 source install/setup.bash
 ```
-## 2. Start ROS TCP Endpoint
+2. **Start ROS TCP Endpoint**
 ```ros2 run ros_tcp_endpoint default_server_endpoint```
 The endpoint will start on 0.0.0.0:10000 by default.
 
-## 3. Launch Unity Simulation
+3. **Launch Unity Simulation**
 Open the Unity simulation project.
 
 If you haven’t installed the simulation yet, download it from the workshop [Notion page](https://mecatron.notion.site/ros2).
 
-
-
-## 4. Enter Guided Mode to allow the node to control the vehicle autonomously
+4. **Enter Guided Mode to allow the node to control the vehicle autonomously**
 ```ros2 service call /mavros/set_mode mavros_msgs/srv/SetMode "{base_mode: 0, custom_mode: 'GUIDED'}"```
 
-## 5. Enter Object Detection Mode
+5. **Enter Object Detection Mode**
 In the Unity simulation project, press ```Tab``` to activate the main camera for object detection.
 
-## 6. Run the gate locator node
+6. **Run the gate locator node**
 ```ros2 run gate_autonomy gate_locator```
 
 ## Expected Behaviour
