@@ -75,3 +75,8 @@
 2. It then rotates in place to locate the gate.  
 3. It moves toward the gate while correcting its lateral position to align properly.  
 4. Once centered, it continues moving forward through the gate.
+
+## Simulation Results
+
+Watch the video demonstrating three consecutive runs of the simulation with the GateLocator node:
+[GateLocator Simulation Video](https://youtu.be/rygaKVGJZhs)
