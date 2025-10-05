@@ -13,7 +13,7 @@
 
 1. **Depth Control:**  
    - The robot should reach a target depth quickly. A proportional gain (`k_depth`) controls descent speed, clamped to avoid excessive velocity.  
-   - The target depth was obtained by monitoring altitude data published in '/mavros/global_position/rel_alt', with the help of a foxglove simulation.
+   - The target depth was obtained by monitoring altitude data published in ```/mavros/global_position/rel_alt```, with the help of a foxglove simulation.
 
 2. **Gate Detection:**  
    - A vision node provides bounding boxes (`BoundingBoxArray`).  
@@ -50,7 +50,8 @@ The endpoint will start on 0.0.0.0:10000 by default.
 ## 3. Launch Unity Simulation
 Open the Unity simulation project.
 
-If you haven’t installed the simulation yet, download it from the workshop Notion page: [https://mecatron.notion.site/ros2](https://mecatron.notion.site/ros2)
+If you haven’t installed the simulation yet, download it from the workshop Notion page: [Notion Page](https://mecatron.notion.site/ros2)
+
 
 
 ## 4. Enter Guided Mode to allow the node to control the vehicle autonomously
