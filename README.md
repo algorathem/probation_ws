@@ -36,35 +36,42 @@
 
 ## Setup Steps for ROS2 Gate Locator Simulation
 
-1. **Build ROS2 Workspace**
+1. **Build ROS2 Workspace**  
+    ```bash
+    cd probation_ws
+    colcon build
+    source install/setup.bash
+    ```
 
-```bash
-cd probation_ws
-colcon build
-source install/setup.bash
-```
-2. **Start ROS TCP Endpoint**
-```ros2 run ros_tcp_endpoint default_server_endpoint```
-The endpoint will start on 0.0.0.0:10000 by default.
+2. **Start ROS TCP Endpoint**  
+    ```bash
+    ros2 run ros_tcp_endpoint default_server_endpoint
+    ```  
+    The endpoint will start on `0.0.0.0:10000` by default.
 
-3. **Launch Unity Simulation**
-Open the Unity simulation project.
+3. **Launch Unity Simulation**  
+    Open the Unity simulation project.  
+    If you haven’t installed the simulation yet, download it from the workshop [Notion page](https://mecatron.notion.site/ros2).
 
-If you haven’t installed the simulation yet, download it from the workshop [Notion page](https://mecatron.notion.site/ros2).
+4. **Enter Guided Mode**  
+    Allow the node to control the vehicle autonomously:  
+    ```bash
+    ros2 service call /mavros/set_mode mavros_msgs/srv/SetMode "{base_mode: 0, custom_mode: 'GUIDED'}"
+    ```
 
-4. **Enter Guided Mode to allow the node to control the vehicle autonomously**
-```ros2 service call /mavros/set_mode mavros_msgs/srv/SetMode "{base_mode: 0, custom_mode: 'GUIDED'}"```
+5. **Enter Object Detection Mode**  
+    In the Unity simulation project, press `Tab` to activate the main camera for object detection.
 
-5. **Enter Object Detection Mode**
-In the Unity simulation project, press ```Tab``` to activate the main camera for object detection.
+6. **Run the Gate Locator Node**  
+    ```bash
+    ros2 run gate_autonomy gate_locator
+    ```
 
-6. **Run the gate locator node**
-```ros2 run gate_autonomy gate_locator```
+---
 
 ## Expected Behaviour
 
-1. The robot first descends to the target depth (gate-level).
-2. Once at depth, it rotates in place to locate the gate.  
-3. After detecting the gate, it moves forward while adjusting its lateral position to stay centered on the gate.  
-4. If lateral correction is not needed, it proceeds straight through the gate without unnecessary rotation.
-
+1. The robot first descends to gate-level.  
+2. It then rotates in place to locate the gate.  
+3. It moves toward the gate while correcting its lateral position to align properly.  
+4. Once centered, it continues moving forward through the gate.
